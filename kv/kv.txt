@@ -1,0 +1,12 @@
+
+
+[EN]
+
+KV Files: These KV files can be thought of as the CSS stylesheets in KivyMD, as they are focused on the design and styling of each page in the application. 
+They define the visual structure and styles of the various user interface components.
+
+
+[ES]
+
+KV Files: Estos archivos KV pueden considerarse como las hojas de estilo (CSS) en KivyMD, ya que están orientados al diseño y estilo de cada página en la aplicación. 
+Definen la estructura visual y los estilos de los diferentes componentes de la interfaz de usuario.
