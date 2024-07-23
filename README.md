@@ -2,8 +2,7 @@
 Python + KivyMD for a app mobile.
 
 [EN]
-Project Overview
-Project Features
+
 Python 3.12: The project is developed using Python 3.12, ensuring compatibility with the latest features and improvements of the language.
 
 Kivy: A framework for developing multi-touch applications, used to build the application's graphical user interface (GUI).
@@ -59,11 +58,9 @@ Performance Optimization: The application is optimized for performance, with eff
 Documentation: Comprehensive documentation is provided in both English and Spanish, ensuring accessibility for a wider audience.
 
 =================================================================================================================================
-=================================================================================================================================
 
 [ES]
 
-Visión General del Proyecto
 Características del Proyecto
 Python 3.12: El proyecto está desarrollado utilizando Python 3.12, asegurando compatibilidad con las últimas características y mejoras del lenguaje.
 
