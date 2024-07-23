@@ -1,0 +1,21 @@
+
+
+[EN]
+* main_screen.py: Contains the main screen of the application, which is displayed upon starting the app. This screen provides an overview and the main options for the user.
+
+* task_history_screen.py: Manages the screen or tab that displays the task history. Here, users can review and manage completed tasks and their statuses.
+
+* task_info_screen.py: Handles the screen that shows detailed information about an individual task. This screen allows users to view and edit the details of each task.
+
+* task_screen.py: Designed for creating and editing new tasks. On this screen, users can input details and configure new tasks.
+
+
+[ES]
+* main_screen.py: Contiene la pantalla principal de la aplicación, la cual se muestra al iniciar la app. En esta pantalla se presenta la vista general y las opciones principales para el usuario.
+
+* task_history_screen.py: Maneja la pantalla o pestaña que muestra el historial de tareas. Aquí se pueden revisar y gestionar las tareas ya realizadas y su estado.
+
+* task_info_screen.py: Responsable de la pantalla que muestra la información detallada de una tarea individual. Esta pantalla permite visualizar y editar los detalles de cada tarea.
+
+* task_screen.py: Diseñada para la creación y edición de nuevas tareas. En esta pantalla, los usuarios pueden ingresar los detalles y configurar nuevas tareas.
+
