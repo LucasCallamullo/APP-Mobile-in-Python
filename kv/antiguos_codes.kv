@@ -1,0 +1,276 @@
+# =====================================================================================
+#               ESTO ERA DEL TODOCARD ANTIGUO
+# =====================================================================================
+
+    MDFloatLayout:
+        id: bar
+        size_hint: .01, .9
+        pos_hint: {"center_x": .02, "center_y": .5}
+        md_bg_color: colors["LightBlue"]["900"] if root.tarea_state else colors["Gray"]["900"]
+
+    MDLabel:
+        id: task_desc
+        text: ""
+        markup: True
+        font_size: "25sp"
+        size_hint_x: .8
+        pos_hint: {"center_x": .46, "center_y": .7}
+        shorten: True  # Habilita el acortamiento del texto si es necesario
+        shorten_from: 'right'  # Especifica de dónde se acortará el texto (puede ser 'left', 'center', o 'right')
+
+    # MDCheckbox:
+    RightCheckbox:
+        active: root.tarea_state
+        size_hint: None, None
+        size: "48dp", "48dp"
+        pos_hint: {"center_x": .92, "center_y": .75}
+
+        on_release: root.check_complete(self, self.active)
+
+
+    MDLabel:
+        id: estate_text
+        text: "Estate: "
+        # font_name
+        font_size: "20sp"
+        # markup: True
+        size_hint_x: .8
+        # line_height: .8
+        pos_hint: {"center_x": .46, "center_y": .3}
+
+    InfoWorkButton:
+        icon: "information-outline"
+        icon_size: "26sp"       # def 24sp
+        size_hint: (.1, .4)     # cambia el tamaño del contenedor del button
+        pos_hint: {"center_x": .92, "center_y": .3}
+
+        theme_text_color: "Custom"
+        text_color: 1, 1, 1, 1
+
+        md_bg_color: colors["LightBlue"]["900"] if root.tarea_state else colors["Gray"]["900"]
+        on_release: self.on_press_info_button(self)
+        # on_release: app.root.current = "info_work"
+
+
+
+# =====================================================================================
+#               ESTO ERA DEL MAIN_SCREEN ANTIGUO
+# =====================================================================================
+
+<ButtonActionsTareaCard>
+    data: self.data
+    root_button_anim: True
+    rounded_button: True
+    hint_animation: True
+    md_bg_color: colors["LightBlue"]["300"]
+
+ButtonActionsTareaCard:
+class ButtonActionsTareaCard(MDFloatingActionButtonSpeedDial):
+    """
+        Notes:
+            Esta funcion lo que hace es crear un diccionario necesario para la info del boton
+            por ahora es la mejor forma que encontre de poder hacer llamadas para cada boton
+            "Text": ['icon-name', "(action/method)on_press", self.callback_function],
+    """
+    def __init__(self, **kwargs):
+        super(ButtonActionsTareaCard, self).__init__(**kwargs)
+        self.data = {
+            'Add Work': ['text-box-plus-outline', "on_press", self.add_work_callback],
+            'Edit': ['file-edit-outline', "on_press", self.callback],
+            'Delete': ['file-document-remove-outline', "on_press", self.callback],
+        }
+        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "Orange"
+
+    def add_work_callback(*args):
+        """
+            :param args:
+            Notes:
+                Como a partir de ahora trabajo con la bottom nav al parecer este va a ser el enfoque
+                que debería usar para facilitar la transicion entre pantallas, mediante el tab y no
+                el enfoque de .current
+        """
+        main_screen = MDApp.get_running_app().root.get_screen("main")
+        # main_screen.ids.bottom_nav.switch_tab("add_work_tab")
+        MDApp.get_running_app().root.current = "add_work"
+
+    def callback(self, *args):
+        print("hola xd")
+
+
+
+
+        MDLabel:
+                    # md_bg_color: 0.3, 0.3, 0.3, 1
+                    text: "My Tasks Today"
+                    pos_hint: {"center_x": .56, "center_y": .95}
+                    # font_name:
+
+                MDLabel:
+                    id: date
+                    text: ""
+                    pos_hint: {"center_x": .565, "center_y": .89}
+                    # font_name
+                    font_size: "18sp"
+
+
+# =====================================================================================
+#               ESTO ERA DEL INFO WORK ANTIGUO
+# =====================================================================================
+class InfoWorkButton(MDIconButton):
+    def __init__(self, **kwargs):
+        """
+            Notes:
+                Esta funcion me sirve para pasar directo la informacion de la tarea que estoy utilizando a una
+                nueva pantalla en este caso "self.parent.tarea" hace referencia al atributo tarea(objeto) del
+                padre directo de este boton, o sea "TareaCard que almancena cada tarea, al pasarle con el
+                self estoy hablando particularmente de la tarea que quiero
+
+        """
+        super(InfoWorkButton, self).__init__(**kwargs)
+
+    def on_press_info_button(self, i):
+        info_screen = MDApp.get_running_app().root.get_screen("info_work")
+        info_screen.info_work_screen(self.parent.tarea)
+        MDApp.get_running_app().root.current = "info_work"
+
+
+MDIconButton:
+            icon: "arrow-left"
+            theme_icon_color: "Custom"
+            icon_color: 1, 0, 0, 1
+            pos_hint: {"center_x": .1, "center_y": .95}
+            # on_release: self.icon = "arrow-left" if self.icon == "trophy-outline" else "trophy-outline"
+            on_release: app.root.current = "main"
+
+        MDLabel:
+            id: text_work_iws
+            text: ""
+            bold: True
+            color: 1, 1, 1, 1
+            pos_hint: {"center_x": .5, "center_y": .95}
+            size_hint_x: 0.7
+
+            halign: "center"  # Centra el texto horizontalmente
+            valign: "middle"  # Centra el texto verticalmente
+            text_size: self.size  # Hace que el texto se ajuste al tamaño del MDLabel
+
+
+        ScrollView:
+            do_scroll_y: True
+            do_scroll_x: False
+            size_hint_y: .9
+            pos_hint: {"center_x": .5, "y": 0}
+            bar_width: 0
+
+            MDGridLayout:
+
+                id: imagen_layout
+                cols: 1
+                adaptive_height: True
+                row_default_height: 80
+                padding: 10, 10
+                spacing: 10, 10
+
+                MDSmartTile:
+                    id: image
+                    overlap: False
+                    radius: [0, 0, 24, 24]
+                    box_radius: [24, 24, 0, 0]
+                    box_color: 1, 1, 1, .2
+                    box_position: "header"
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    on_release: print("Hola")
+
+                    list_image_url:
+                        ("https://i.pinimg.com/564x/33/26/b3/3326b3e4ce007d80a2ece253df6658b1.jpg",\
+                        "https://i.pinimg.com/564x/ae/d1/c6/aed1c62e95f34964edb8a5f88a4fa3e5.jpg",\
+                        "https://i.pinimg.com/564x/99/86/08/9986081ee5989391c6450456cb8c8e6b.jpg",\
+                        "https://i.pinimg.com/originals/73/bd/d8/73bdd8e74d47ba23be35042f783faad2.png",\
+                        "https://i.pinimg.com/564x/26/16/f8/2616f874faf9a2a0baeca5fecd62cf56.jpg",\
+                        "https://i.pinimg.com/736x/fa/13/ae/fa13aef27f7ac50dad5b2eff55d7e0e5.jpg")
+
+                    size_hint: None, None
+                    size:
+                        ("330dp", "250dp") if root.num_id_porc <= 3\
+                        else ("330dp", "400dp")
+
+                    source: self.list_image_url[root.num_id_porc]
+
+                    MDIconButton:
+                        list_icons:
+                            ("account-heart", "heart-off", "heart-minus", "heart-pulse", "heart-plus", "hand-heart")
+
+                        icon: self.list_icons[root.num_id_porc]
+                        theme_icon_color: "Custom"
+                        icon_color: 1, 0, 0, 1
+                        pos_hint: {"center_y": .5}
+                        on_release:
+                            self.icon = "trophy"\
+                            if self.icon == "trophy-outline"\
+                            else "trophy-outline"
+
+                    MDLabel:
+                        id: label_text_image
+                        text: ""
+                        bold: True
+                        color: 1, 1, 1, 1
+
+                MDFloatLayout:
+
+                    MDLabel:
+                        id: label_text_cumplidas
+                        text: ""
+                        pos_hint: {"center_x": .48, "center_y": .85}
+                        size_hint_x: 0.9
+                        # halign: "center"  # Centra el texto horizontalmente
+                        valign: "middle"  # Centra el texto verticalmente
+                        text_size: self.size  # Hace que el texto se ajuste al tamaño del MDLabel
+
+                    MDLabel:
+                        id: label_text_hora
+                        text: ""
+                        pos_hint: {"center_x": .5, "center_y": .55}
+                        size_hint_x: 0.95
+                        valign: "middle"  # Centra el texto verticalmente
+                        text_size: self.size  # Hace que el texto se ajuste al tamaño del MDLabel
+
+                    GridButtonsDay:
+                        id: grid_buttons
+                        cols: 7
+                        spacing: 3
+                        size_hint: None, None  # Ajusta el ancho del layout y permite que la altura se ajuste automáticamente
+                        height: self.minimum_height  # Ajusta la altura al contenido
+                        size: self.minimum_size
+                        pos_hint: {"center_x": 0.5, "center_y": .01}
+
+                MDFloatLayout:
+                    spacing: 5
+
+                    TextIconButton:
+                        icon: "file-edit-outline"
+                        text: "Editar Tarea"
+                        pos_hint: {"center_x": 0.25, "center_y": .2}
+                        size_hint_x: 0.4
+
+                        theme_text_color: "Custom"
+                        text_color: "blue"
+                        theme_icon_color: "Custom"
+                        icon_color: "blue"
+
+                        on_release: self.change_screen_to_edit_work(root.tarea, grid_buttons)
+
+                    TextIconButton:
+                        icon: "trash-can-outline"
+                        text: "Borrar Tarea"
+                        pos_hint: {"center_x": 0.75, "center_y": .2}
+                        size_hint_x: 0.4
+
+                        theme_text_color: "Custom"
+                        text_color: "blue"
+
+                        theme_icon_color: "Custom"
+                        icon_color: "red"
+
+                        # on_release: app.root.current = "main"
+                        on_release: self.switch_navigation()

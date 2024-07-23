@@ -1,0 +1,263 @@
+
+
+#: import colors kivymd.color_definitions.colors
+#: import TextIconButton models.text_icon_button.TextIconButton
+#: import SnackbarGeneric models.snackbar_generic.SnackbarGeneric
+
+
+<TextIconButton>:
+    md_bg_color: "lightblue"
+    font_size: "16sp"
+    theme_text_color: "Custom"
+    text_color: "black"
+    theme_icon_color: "Custom"
+
+
+<GridButtonsDay>:
+    spacing: 3
+    size_hint: None, None  # Ajusta el ancho del layout y permite que la altura se ajuste automáticamente
+    height: self.minimum_height  # Ajusta la altura al contenido
+    size: self.minimum_size
+    pos_hint: {"center_x": 0.5, "center_y": -.2}
+
+
+
+<InfoWorkScreen>:
+    name: "info_work"
+
+    porc_id: 0
+    count_total_tasks: 0
+    count_completed_tasks: 0
+
+    image: image
+    grid_buttons: grid_buttons
+    edit_mode_button: edit_mode_button
+
+    on_leave:
+        grid_buttons.clear_widgets()
+        self.apply_changes = False
+        self.edit_mode = False
+        edit_mode_button.md_bg_color = colors["Green"]["100"]
+
+
+    MDTopAppBar:
+        id: top_bar_iw
+        title: ""
+
+        pos_hint: {"top": 1}
+        adaptive_height: True
+        md_bg_color: "#2d2734"
+
+        left_action_items: [["arrow-left", lambda x: root.arrow_back_callback()]]
+        right_action_items: [["dots-vertical", lambda x: x]]
+
+    ScrollView:
+        do_scroll_y: True
+        do_scroll_x: False
+        size_hint_y: .88
+        pos_hint: {"center_x": .5, "y": 0}
+        bar_width: 3
+
+        MDGridLayout:
+
+            id: imagen_layout
+            cols: 1
+            adaptive_height: True
+            row_default_height: 150
+            padding: 8, 8
+            spacing: 8, 8
+
+            MDSmartTile:
+                id: image
+                overlap: False
+                radius: [0, 0, 24, 24]
+                box_radius: [24, 24, 0, 0]
+                box_color: 1, 1, 1, .2
+                box_position: "header"
+                pos_hint: {"center_x": .5, "center_y": .5}
+
+                list_image_url:
+                    ("https://i.pinimg.com/564x/33/26/b3/3326b3e4ce007d80a2ece253df6658b1.jpg",\
+                    "https://i.pinimg.com/564x/ae/d1/c6/aed1c62e95f34964edb8a5f88a4fa3e5.jpg",\
+                    "https://i.pinimg.com/564x/99/86/08/9986081ee5989391c6450456cb8c8e6b.jpg",\
+                    "https://i.pinimg.com/originals/73/bd/d8/73bdd8e74d47ba23be35042f783faad2.png",\
+                    "https://i.pinimg.com/564x/26/16/f8/2616f874faf9a2a0baeca5fecd62cf56.jpg",\
+                    "https://i.pinimg.com/736x/fa/13/ae/fa13aef27f7ac50dad5b2eff55d7e0e5.jpg")
+
+                size_hint: None, None
+                size:
+                    ("330dp", "250dp") if root.porc_id <= 3\
+                    else ("330dp", "400dp")
+
+                source: self.list_image_url[root.porc_id]
+
+                MDIconButton:
+                    list_icons:
+                        ("account-heart", "heart-off", "heart-minus", "heart-pulse", "heart-plus", "hand-heart")
+
+                    icon: self.list_icons[root.porc_id]
+                    theme_icon_color: "Custom"
+                    icon_color: 1, 0, 0, 1
+                    pos_hint: {"center_y": .5}
+
+                MDLabel:
+                    id: label_text_image
+                    bold: True
+                    color: 1, 1, 1, 1
+                    text:
+                        f"{root.porc}%" if root.count_completed_tasks >= 10\
+                        else f"JUST DO IT"
+
+            MDFloatLayout:
+                id: cont_grid_buttons
+
+                MDLabel:
+                    id: label_text_cumplidas
+                    pos_hint: {"center_x": .5, "center_y": .8}
+                    size_hint_x: 0.9
+                    halign: "center"  # Centra el texto horizontalmente
+                    valign: "middle"  # Centra el texto verticalmente
+                    text_size: self.size  # Hace que el texto se ajuste al tamaño del MDLabel
+                    font_size:"21sp"
+
+                    text:
+                        f"Tasks completed: {root.count_completed_tasks}/{root.count_total_tasks}"\
+                        if root.count_total_tasks >= 10\
+                        else f"Continue with this Task for results!"
+
+                TextIconButton:
+                    id: icon_text_hora
+                    icon: "clock-edit"
+                    text: "Hour: "
+                    pos_hint: {"center_x": 0.5, "center_y": .5}
+                    size_hint_x: 0.9
+                    icon_color: "blue"
+                    on_release:
+                        if root.edit_mode:\
+                        root.popup_time.open();
+                        else:\
+                        SnackbarGeneric(label_text="You must activate edit mode to make changes.",\
+                        icon="close").open()
+
+                TextIconButton:
+                    id: icon_text_tarea
+                    icon: "file-edit"
+                    text: ""
+                    multiline: True
+                    pos_hint: {"center_x": 0.5, "center_y": .2}
+                    size_hint_x: 0.9
+                    icon_color: "blue"
+                    text_size: self.size
+                    on_release:
+                        if root.edit_mode:\
+                        root.popup_work.open();
+                        else:\
+                        SnackbarGeneric(label_text="You must activate edit mode to make changes.",\
+                        icon="close").open()
+
+                GridButtonsDay:
+                    id: grid_buttons
+
+
+            MDFloatLayout:
+                spacing: 5
+
+                TextIconButton:
+                    id: edit_mode_button
+                    icon: "file-edit-outline"
+                    text: " Edit Mode "
+                    pos_hint: {"center_x": 0.25, "center_y": .2}
+                    size_hint_x: 0.4
+                    md_bg_color: colors["Green"]["100"]
+
+                    icon_color: "blue"
+                    on_release:
+                        root.edit_handle()
+                        print("esto edit_mode:", root.edit_mode)
+                        print("esto apply_changes:", root.apply_changes)
+                        self.md_bg_color = colors["Green"]["700"] if root.edit_mode else colors["Green"]["100"]
+
+                TextIconButton:
+                    icon: "trash-can-outline"
+                    text: "Delete Task"
+                    pos_hint: {"center_x": 0.75, "center_y": .2}
+                    size_hint_x: 0.4
+                    icon_color: "red"
+
+                    on_release:
+                        if root.edit_mode:\
+                        root.delete_handle();
+                        else:\
+                        SnackbarGeneric(label_text="You must activate edit mode to make changes.",\
+                        icon="close").open()
+
+
+# =================================================================================
+#                           POP EDIT WORK
+# =================================================================================
+<PopupEditWork>:
+    title: "Editar la Tarea"
+    title_align: "center"           # Centra el título del Popup
+    size_hint: 0.8, 0.8             # Ajusta el tamaño del Popup según el tamaño de la pantalla
+    auto_dismiss: False
+
+    MDGridLayout:
+        id: grid_layout
+        rows: 2
+        spacing: 10
+        padding: 10
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}  # Centra el GridLayout en la ventana
+
+        MDFloatLayout:
+            spacing: 10
+
+            MDLabel:
+                id: popup_label_text
+                text: ""
+                pos_hint: {"center_x": .5, "center_y": .9}
+                size_hint_x: .95
+                font_size: "20sp"
+
+            MDTextField:
+                id: input_field
+                text: ""
+                hint_text: "Ingrese su tarea nueva:"
+                helper_text_mode: "on_focus"
+
+                required: True
+                mode: "rectangle"
+                mode: "fill"
+                helper_text: "Enter a work"
+                max_text_length: 70
+
+                icon_right: "note-alert-outline"
+                # multiline: True
+                # max_height: "100dp"
+
+                pos_hint: {"center_x": .5, "center_y": .65}
+                size_hint_x: .95
+                on_text_validate:
+                    root.update_label_text(self.text, "New: ")
+
+
+            MDLabel:
+                id: popup_label_text_new
+                text: ""
+                pos_hint: {"center_x": .5, "center_y": .35}
+                size_hint_x: .95
+                font_size: "20sp"
+
+            MDFlatButton:
+                text: "Aceptar"
+                pos_hint: {"center_x": 0.75, "center_y": .1}
+                md_bg_color: colors["Blue"]["300"]
+
+                on_release:
+                    root.on_acceptar_pressed()
+
+            MDFlatButton:
+                text: "Cerrar"
+                pos_hint: {"center_x": 0.25, "center_y": .1}
+                md_bg_color: colors["Blue"]["300"]
+                on_release: root.dismiss()
+

@@ -1,0 +1,233 @@
+
+
+#: import colors kivymd.color_definitions.colors
+#: import GridButtonsDay models.day_button.GridButtonsDay
+#: import DayButton models.day_button.DayButton
+#: import TextIconButton models.text_icon_button.TextIconButton
+#: import SnackbarGeneric models.snackbar_generic.SnackbarGeneric
+
+
+# =============================================================================
+#                           WORK SCREEN
+# =============================================================================
+<DayButton>:
+    active: False
+    size_hint: None, None
+    icon_size: "20sp"                       # def 24sp
+    on_release:
+        root.check_button(self, self.active)
+        self.md_bg_color = colors["Blue"]["500"] if self.active else colors["BlueGray"]["600"]
+
+
+<TextIconButton>:
+    md_bg_color: "lightblue"
+    font_size: "16sp"
+    theme_text_color: "Custom"
+    theme_icon_color: "Custom"
+    # font_name: "path/to/font"
+
+
+<AddTaskScreen>:
+    name: "add_task"
+
+    grid_buttons: grid_buttons
+    tarea: None
+    description: ""
+
+    on_leave: grid_buttons.clear_widgets()
+
+    MDLabel:
+        text: "Crear Nueva Tarea"
+        pos_hint: {"center_x": .56, "center_y": .925}
+
+    MDIconButton:
+        icon: "clock-edit"
+        pos_hint: {"center_x": .89, "center_y": .925}
+        user_font_size: "30sp"
+        md_bg_color: 0, 0, 255, 1
+        theme_text_color: "Custom"
+        text_color: 1, 1, 1, 1
+        on_release: root.popup.open()
+
+    MDTextField:
+        id: input_field
+        text: ""
+        hint_text: "Enter your new task: "
+        helper_text_mode: "on_focus"
+
+        required: True
+        mode: "rectangle"
+        mode: "fill"
+        helper_text: "Enter a work."
+        max_text_length: 50
+        icon_right: "note-alert-outline"
+        # multiline: True
+        # max_height: "100dp"
+
+        pos_hint: {"center_x": .50, "center_y": .8}
+        size_hint_x: .8
+        # on_text: root.update_label_text(self.text)
+        on_text_validate: root.update_label_text(self.text)
+
+    MDLabel:
+        id: display_work
+        text: "Task: "
+        font_size: "15sp"
+        size_hint_x: .9
+        pos_hint: {"center_x": .5, "center_y": .63}
+
+        shorten: True           # Habilita el acortamiento del texto si es necesario
+        shorten_from: 'right'   # Especifica de dónde se acortará el texto (puede ser 'left', 'center', o 'right')
+
+    MDLabel:
+        id: display_time
+        text: "Hour: "
+        font_size: "15sp"
+        size_hint_x: .9
+        pos_hint: {"center_x": .5, "center_y": .58}
+
+    GridButtonsDay:
+        id: grid_buttons
+
+        spacing: 3
+        size_hint: None, None  # Ajusta el ancho del layout y permite que la altura se ajuste automáticamente
+        height: self.minimum_height  # Ajusta la altura al contenido
+        size: self.minimum_size
+        pos_hint: {"center_x": 0.5, "center_y": .45}
+
+    TextIconButton:
+        icon: "check"
+        text: "Aceptar"
+        pos_hint: {"center_x": 0.25, "center_y": .15}
+        text_color: "blue"
+        icon_color: "blue"
+
+        # Esta es una lista para respuestas.
+        list_texts_snackbar:
+            ("The task description is too short.",\
+            "The task time was not specified.",\
+            "The task with the description already exists.",\
+            f"The task has been added: {root.description}")
+
+        on_release:
+            root.add_todo();
+
+            if root.tarea is None:\
+            SnackbarGeneric(label_text=self.list_texts_snackbar[root.id_text_snackbar],\
+            icon="close",\
+            icon_color="red").open();
+
+            else:\
+            SnackbarGeneric(label_text=self.list_texts_snackbar[root.id_text_snackbar],\
+            icon="check",\
+            icon_color="green").open();\
+
+            root.switch_navigation();
+
+    TextIconButton:
+        icon: "close"
+        text: "Cancelar"
+        pos_hint: {"center_x": 0.75, "center_y": .15}
+        text_color: "blue"
+        icon_color: "red"
+        on_release: root.switch_navigation()
+
+
+# =============================================================================
+#                           POPUP SELECT TIME
+# =============================================================================
+<NumberSelector>:
+    orientation: 'vertical'
+
+    Label:
+        color: (0, 1, 1, 1)
+        text: f"{(root.current_num + 2) % (root.max_value + 1):02d}"
+
+    Label:
+        color: (0, 1, 1, 1)
+        text: f"{(root.current_num + 1) % (root.max_value + 1):02d}"
+
+    Label:
+        text: f"{root.current_num % (root.max_value + 1):02d}"
+        font_size: "35sp"                   # Aumentar el tamaño del font_size para que resalte más
+        color: (1, 1, 1, 1)
+
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1  # Color blanco para los guiones
+            Rectangle:
+                size: self.width, 1  # Ancho completo, altura de 1 píxel
+                pos: self.x, self.y  # Posición inicial, en la parte superior del Label
+
+            Rectangle:
+                size: self.width, 1  # Ancho completo, altura de 1 píxel
+                pos: self.x, self.top - 1  # Posición en la parte inferior del Label
+
+    Label:
+        color: (0, 1, 1, 1)
+        text: f"{(root.current_num - 1) % (root.max_value + 1):02d}"
+
+    Label:
+        color: (0, 1, 1, 1)
+        text: f"{(root.current_num - 2) % (root.max_value + 1):02d}"
+
+
+<NumberSelectorButton@ButtonBehavior+NumberSelector>:
+    on_touch_move: root.on_touch_move(args[1])
+
+
+<PopupSelectTime>:
+    title: "Selecciona una hora"
+    title_align: "center"           # Centra el título del Popup
+    size_hint: 0.8, 0.8             # Ajusta el tamaño del Popup según el tamaño de la pantalla
+    auto_dismiss: False
+
+    GridLayout:
+        id: grid_layout
+        rows: 2
+        spacing: 10
+        padding: 10
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}  # Centra el GridLayout en la ventana
+
+        MDBoxLayout:
+            spacing: 10
+
+            # This is for Hours
+            NumberSelector:
+                id: hour_time
+                min_value: 0
+                max_value: 23
+
+            # This is for Minutes
+            NumberSelector:
+                id: min_time
+                min_value: 0
+                max_value: 59
+
+        MDBoxLayout:
+            size_hint: 0.3, 0.3
+            pos_hint: {"center_x": 0.5}
+            spacing: 10
+
+            Button:
+                size_hint: 0.4, 0.4
+                text: "Aceptar"
+
+                on_press:
+                    root.on_acceptar_pressed()
+
+            Button:
+                size_hint: 0.4, 0.4
+                text: "Cerrar"
+                on_release: root.dismiss()
+
+
+
+
+
+
+
+
+
+
+

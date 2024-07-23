@@ -1,0 +1,170 @@
+
+
+#: import colors kivymd.color_definitions.colors
+#: import ScrollEffect  kivy.effects.scroll.ScrollEffect
+#: import TextIconButton models.text_icon_button.TextIconButton
+
+
+
+# =====================================================
+#                      Tarea Card
+# =====================================================
+<TareaCard>
+    id: tarea_card_id
+    tarea_state: False
+    radius: [20, 20, 20, 20]  # Ajustar el radio de las esquinas
+
+    text: ""
+    secondary_text: ""
+    bg_color: colors["LightBlue"]["500"] if self.tarea_state else colors["Gray"]["800"]
+
+    # IconLeftWidgetWithoutTouch:
+    IconLeftWidget:
+        id: icon_left_widget
+        icon: "battery-charging-50"
+
+        # md_bg_color: colors["LightBlue"]["900"] if root.tarea_state else colors["Gray"]["900"]
+        # icon: "information-outline"
+        # icon_size: "26sp"       # def 24sp
+        # size_hint: (.1, .4)     # cambia el tamaño del contenedor del button
+        # theme_text_color: "Custom"
+        # text_color: 1, 1, 1, 1
+
+        on_release:
+            if right_checkbox.active:\
+            root.create_dialog(\
+            text_title="Count Task:",\
+            text_label="Mark the task to account for it and save your data (this action cannot be undone)",\
+            list_buttons=("Completed", "Incomplete", "Cancel"));
+
+
+            # self.icon = "battery-charging-100";
+
+            # self.icon = "battery-charging-50"\
+            # if self.icon == "trophy-outline"\
+            # else "trophy-outline"
+
+    RightCheckbox:
+        id: right_checkbox
+        active: root.tarea_state
+        on_press:
+            root.check_complete(self, self.active)
+
+
+# =====================================================
+#                      MainScreen
+# =====================================================
+<MainScreen>:
+    date: date
+    todo_list: todo_list
+    name: "main"
+
+    MDBottomNavigation:
+        id: bottom_nav
+        selected_color_background: "blue"
+        text_color_active: "pink"
+
+        MDBottomNavigationItem:
+            id: bottom_nav_main_tab
+            name: 'main_tab'
+            text: 'My Tasks'
+            icon: 'flash-alert'
+            badge_icon: "numeric-10"
+
+            MDBoxLayout:
+                orientation: "vertical"
+
+                MDTopAppBar:
+
+                    type_height: "small"
+                    pos_hint: {"top": 1}
+                    adaptive_height: True
+                    md_bg_color: "#2d2734"
+
+                    right_action_items:
+                        [["calendar", lambda x: x]]
+                    #    [["calendar", lambda x: x],
+
+                    title: "Tasks Today"
+
+                MDBoxLayout:
+                    orientation: "vertical"
+                    padding: "24dp", "8dp", 0, "8dp"
+                    adaptive_size: True
+
+                    MDLabel:
+                        id: date
+                        text: ""
+                        adaptive_size: True
+
+                ScrollViewTodoCard:
+                    id: scroll_view
+                    do_scroll_y: True
+                    do_scroll_x: False
+
+                    size_hint_y: .85
+                    pos_hint: {"center_x": .5, "center_y": .45}
+                    bar_width: 4
+
+                    ListTodoCard:
+                        id: todo_list
+                        cols:  1
+                        # size_hint_y: None
+                        # height: self.minimum_height
+                        # row_default_height: 80
+                        padding: 8, 8
+                        spacing: 8, 8
+
+# ==================================================================================
+#               A PARTIR DE ACA SON LOS OTROS NAVIGATION
+# ==================================================================================
+        MDBottomNavigationItem:
+            name: 'add_work_tab'
+            text: 'Add Task'
+            icon: 'plus'
+
+            add_work: add_work
+
+            on_leave:
+                add_work.reset_text_labels("Task: ", "Hour: ")
+
+            AddTaskScreen:
+                id: add_work
+
+        MDBottomNavigationItem:
+            id: bottom_nav_history_task_tab
+            name: 'history_task_tab'
+            text: 'All Tasks'
+            icon: 'note-search-outline'
+            history_screen: history_screen
+
+            on_tab_press:
+                history_screen.listar_callback()
+
+            on_leave:
+                history_screen.edit_mode = False
+                print(history_screen.edit_mode)
+
+
+            TaskHistoryScreen:
+                id: history_screen
+
+
+        MDBottomNavigationItem:
+            name: 'perfil_tab'
+            text: 'Profile'
+            icon: 'account-question'
+
+            MDLabel:
+                text: "aca va un perfil xd"
+
+            # AddTaskScreen:
+            #    id: add_work
+
+
+
+
+
+
+
+

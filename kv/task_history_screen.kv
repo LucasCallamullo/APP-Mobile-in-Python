@@ -1,0 +1,48 @@
+#: import colors kivymd.color_definitions.colors
+
+
+# =============================================================================
+#                          HISTORY TASKS SCREEN
+# =============================================================================
+<TareaCard>
+    text: ""
+    secondary_text: ""
+    _no_ripple_effect: True
+
+    ImageLeftWidget:
+        source: "data/logo/kivy-icon-256.png"
+
+
+
+<TaskHistoryScreen>:
+    name: "history_task"
+    selection_list: selection_list
+
+    MDBoxLayout:
+        orientation: "vertical"
+
+        MDTopAppBar:
+            id: toolbar
+            title: "All Tasks"
+            left_action_items: [["menu", lambda x: root.future_menu()]]
+            right_action_items: [["magnify"], ["dots-vertical", lambda x: root.edit_mode_off()]]
+            md_bg_color: 0, 0, 0, 1
+
+        MDBoxLayout:
+            padding: "24dp", "8dp", 0, "8dp"
+            adaptive_size: True
+
+            MDLabel:
+                text: "Today"
+                adaptive_size: True
+
+        ScrollView:
+            # MDSelectionList:
+            ListHistory:
+                id: selection_list
+                spacing: "12dp"
+                overlay_color: root.overlay_color[:-1] + [.2]
+                icon_bg_color: root.overlay_color
+                on_selected: root.on_selected(*args)
+                on_unselected: root.on_unselected(*args)
+                on_selected_mode: root.set_selection_mode(*args)
