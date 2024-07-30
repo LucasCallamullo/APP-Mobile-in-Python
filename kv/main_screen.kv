@@ -2,7 +2,7 @@
 
 #: import colors kivymd.color_definitions.colors
 #: import ScrollEffect  kivy.effects.scroll.ScrollEffect
-#: import TextIconButton models.text_icon_button.TextIconButton
+# ==    #: import TextIconButton models.text_icon_button.TextIconButton
 
 
 
@@ -12,11 +12,15 @@
 <TareaCard>
     id: tarea_card_id
     tarea_state: False
+    soft_delete: False
     radius: [20, 20, 20, 20]  # Ajustar el radio de las esquinas
 
     text: ""
     secondary_text: ""
-    bg_color: colors["LightBlue"]["500"] if self.tarea_state else colors["Gray"]["800"]
+    bg_color:
+        colors["LightBlue"]["500"] if self.tarea_state\
+        else (colors["Red"]["500"] if self.soft_delete\
+        else colors["Gray"]["800"])
 
     # IconLeftWidgetWithoutTouch:
     IconLeftWidget:
@@ -37,9 +41,7 @@
             text_label="Mark the task to account for it and save your data (this action cannot be undone)",\
             list_buttons=("Completed", "Incomplete", "Cancel"));
 
-
             # self.icon = "battery-charging-100";
-
             # self.icon = "battery-charging-50"\
             # if self.icon == "trophy-outline"\
             # else "trophy-outline"
@@ -75,17 +77,13 @@
                 orientation: "vertical"
 
                 MDTopAppBar:
-
+                    title: "Tasks Today"
                     type_height: "small"
                     pos_hint: {"top": 1}
                     adaptive_height: True
                     md_bg_color: "#2d2734"
 
-                    right_action_items:
-                        [["calendar", lambda x: x]]
-                    #    [["calendar", lambda x: x],
-
-                    title: "Tasks Today"
+                    right_action_items: [["calendar", lambda x: x]]
 
                 MDBoxLayout:
                     orientation: "vertical"
@@ -118,6 +116,11 @@
 # ==================================================================================
 #               A PARTIR DE ACA SON LOS OTROS NAVIGATION
 # ==================================================================================
+
+
+# ==================================================================================
+#                           ADD WORK TAB
+# ==================================================================================
         MDBottomNavigationItem:
             name: 'add_work_tab'
             text: 'Add Task'
@@ -131,40 +134,40 @@
             AddTaskScreen:
                 id: add_work
 
+
+# ==================================================================================
+#                           history_task_tab
+# ==================================================================================
         MDBottomNavigationItem:
             id: bottom_nav_history_task_tab
             name: 'history_task_tab'
+
             text: 'All Tasks'
             icon: 'note-search-outline'
             history_screen: history_screen
 
             on_tab_press:
-                history_screen.listar_callback()
+                history_screen.change_edit_mode()
+                print(history_screen.edit_mode)
+                # history_screen.listar_callback()
 
             on_leave:
-                history_screen.edit_mode = False
+                history_screen.change_edit_mode()
                 print(history_screen.edit_mode)
-
 
             TaskHistoryScreen:
                 id: history_screen
 
 
+# ==================================================================================
+#                           perfil_tab
+# ==================================================================================
         MDBottomNavigationItem:
             name: 'perfil_tab'
             text: 'Profile'
             icon: 'account-question'
 
             MDLabel:
-                text: "aca va un perfil xd"
-
-            # AddTaskScreen:
-            #    id: add_work
-
-
-
-
-
-
+                text: "some profile some day"
 
 

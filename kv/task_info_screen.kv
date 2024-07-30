@@ -29,6 +29,8 @@
     count_total_tasks: 0
     count_completed_tasks: 0
 
+    soft_delete: False
+
     image: image
     grid_buttons: grid_buttons
     edit_mode_button: edit_mode_button
@@ -172,10 +174,12 @@
 
                     icon_color: "blue"
                     on_release:
-                        root.edit_handle()
-                        print("esto edit_mode:", root.edit_mode)
-                        print("esto apply_changes:", root.apply_changes)
-                        self.md_bg_color = colors["Green"]["700"] if root.edit_mode else colors["Green"]["100"]
+                        if root.soft_delete:\
+                        SnackbarGeneric(label_text="The task has been deleted; it needs to be recovered for editing.",\
+                        icon="close").open();
+                        else:\
+                        root.edit_handle();\
+                        self.md_bg_color = colors["Green"]["700"] if root.edit_mode else colors["Green"]["100"];
 
                 TextIconButton:
                     icon: "trash-can-outline"
@@ -184,9 +188,20 @@
                     size_hint_x: 0.4
                     icon_color: "red"
 
+                    md_bg_color: colors["Red"]["900"] if root.soft_delete else colors["Blue"]["100"]
+
+
                     on_release:
-                        if root.edit_mode:\
+                        if root.soft_delete:\
+                        root.create_dialog(\
+                        text_title="Recover Task",\
+                        text_label="Do you wanna recover this task?",\
+                        list_buttons=("Yes", "No"));
+
+                        elif root.edit_mode:\
+                        self.md_bg_color = colors["Red"]["900"] if root.soft_delete else colors["Blue"]["100"];\
                         root.delete_handle();
+
                         else:\
                         SnackbarGeneric(label_text="You must activate edit mode to make changes.",\
                         icon="close").open()
@@ -196,7 +211,7 @@
 #                           POP EDIT WORK
 # =================================================================================
 <PopupEditWork>:
-    title: "Editar la Tarea"
+    title: "Edit Task"
     title_align: "center"           # Centra el título del Popup
     size_hint: 0.8, 0.8             # Ajusta el tamaño del Popup según el tamaño de la pantalla
     auto_dismiss: False
@@ -221,21 +236,24 @@
             MDTextField:
                 id: input_field
                 text: ""
-                hint_text: "Ingrese su tarea nueva:"
+                hint_text: "Enter you new task:"
                 helper_text_mode: "on_focus"
 
                 required: True
                 mode: "rectangle"
                 mode: "fill"
-                helper_text: "Enter a work"
+                helper_text: "Enter a task"
                 max_text_length: 70
+                pos_hint: {"center_x": .5, "center_y": .65}
+                size_hint_x: .95
 
                 icon_right: "note-alert-outline"
                 # multiline: True
                 # max_height: "100dp"
 
-                pos_hint: {"center_x": .5, "center_y": .65}
-                size_hint_x: .95
+                on_text:
+                    self.icon_right = "check"
+
                 on_text_validate:
                     root.update_label_text(self.text, "New: ")
 
@@ -248,16 +266,19 @@
                 font_size: "20sp"
 
             MDFlatButton:
-                text: "Aceptar"
+                text: "Accept"
+                pos_hint: {"center_x": 0.25, "center_y": .1}
+                md_bg_color: colors["Blue"]["300"]
+
+                on_release:
+                    root.on_accept_pressed()
+
+            MDFlatButton:
+                text: "Close "
                 pos_hint: {"center_x": 0.75, "center_y": .1}
                 md_bg_color: colors["Blue"]["300"]
 
                 on_release:
-                    root.on_acceptar_pressed()
-
-            MDFlatButton:
-                text: "Cerrar"
-                pos_hint: {"center_x": 0.25, "center_y": .1}
-                md_bg_color: colors["Blue"]["300"]
-                on_release: root.dismiss()
+                    # root.dismiss()
+                    root.to_dismiss()
 

@@ -2,8 +2,6 @@
 
 #: import colors kivymd.color_definitions.colors
 #: import GridButtonsDay models.day_button.GridButtonsDay
-#: import DayButton models.day_button.DayButton
-#: import TextIconButton models.text_icon_button.TextIconButton
 #: import SnackbarGeneric models.snackbar_generic.SnackbarGeneric
 
 
@@ -13,7 +11,7 @@
 <DayButton>:
     active: False
     size_hint: None, None
-    icon_size: "20sp"                       # def 24sp
+    icon_size: "20sp"   # def 24sp
     on_release:
         root.check_button(self, self.active)
         self.md_bg_color = colors["Blue"]["500"] if self.active else colors["BlueGray"]["600"]
@@ -30,107 +28,113 @@
 <AddTaskScreen>:
     name: "add_task"
 
-    grid_buttons: grid_buttons
     tarea: None
     description: ""
+    grid_buttons: grid_buttons
 
-    on_leave: grid_buttons.clear_widgets()
+    MDBoxLayout:
+        orientation: "vertical"
 
-    MDLabel:
-        text: "Crear Nueva Tarea"
-        pos_hint: {"center_x": .56, "center_y": .925}
+        MDTopAppBar:
+            id: toolbar
+            title: "Create New Task"
+            right_action_items: [["clock-edit", lambda x: root.popup.open()]]
+            md_bg_color: colors["Gray"]["800"]
 
-    MDIconButton:
-        icon: "clock-edit"
-        pos_hint: {"center_x": .89, "center_y": .925}
-        user_font_size: "30sp"
-        md_bg_color: 0, 0, 255, 1
-        theme_text_color: "Custom"
-        text_color: 1, 1, 1, 1
-        on_release: root.popup.open()
+        MDFloatLayout:
+            orientation: "vertical"
 
-    MDTextField:
-        id: input_field
-        text: ""
-        hint_text: "Enter your new task: "
-        helper_text_mode: "on_focus"
+            MDTextField:
+                id: input_field
+                text: ""
+                hint_text: "Enter your new task: "
+                helper_text_mode: "on_focus"
 
-        required: True
-        mode: "rectangle"
-        mode: "fill"
-        helper_text: "Enter a work."
-        max_text_length: 50
-        icon_right: "note-alert-outline"
-        # multiline: True
-        # max_height: "100dp"
+                required: True
+                mode: "rectangle"
+                mode: "fill"
+                helper_text: "Enter a task description."
+                max_text_length: 50
+                icon_right: "note-alert-outline"
+                # multiline: True
+                # max_height: "100dp"
 
-        pos_hint: {"center_x": .50, "center_y": .8}
-        size_hint_x: .8
-        # on_text: root.update_label_text(self.text)
-        on_text_validate: root.update_label_text(self.text)
+                pos_hint: {"center_x": .50, "center_y": .85}
+                size_hint_x: .8
 
-    MDLabel:
-        id: display_work
-        text: "Task: "
-        font_size: "15sp"
-        size_hint_x: .9
-        pos_hint: {"center_x": .5, "center_y": .63}
+                on_text:
+                    self.icon_right = "check"
+                    # root.update_label_text(self.text)
 
-        shorten: True           # Habilita el acortamiento del texto si es necesario
-        shorten_from: 'right'   # Especifica de dónde se acortará el texto (puede ser 'left', 'center', o 'right')
+                on_text_validate:
+                    root.update_label_text(self.text)
 
-    MDLabel:
-        id: display_time
-        text: "Hour: "
-        font_size: "15sp"
-        size_hint_x: .9
-        pos_hint: {"center_x": .5, "center_y": .58}
+            MDLabel:
+                id: display_work
+                text: "Task: "
+                font_size: "15sp"
+                size_hint_x: .9
+                pos_hint: {"center_x": .5, "center_y": .65}
 
-    GridButtonsDay:
-        id: grid_buttons
+                shorten: True           # Habilita el acortamiento del texto si es necesario
+                shorten_from: 'right'   # Especifica de dónde se acortará el texto (puede ser 'left', 'center', o 'right')
 
-        spacing: 3
-        size_hint: None, None  # Ajusta el ancho del layout y permite que la altura se ajuste automáticamente
-        height: self.minimum_height  # Ajusta la altura al contenido
-        size: self.minimum_size
-        pos_hint: {"center_x": 0.5, "center_y": .45}
+            MDLabel:
+                id: display_time
+                text: "Hour: "
+                font_size: "15sp"
+                size_hint_x: .9
+                pos_hint: {"center_x": .5, "center_y": .5}
 
-    TextIconButton:
-        icon: "check"
-        text: "Aceptar"
-        pos_hint: {"center_x": 0.25, "center_y": .15}
-        text_color: "blue"
-        icon_color: "blue"
+            GridButtonsDay:
+                id: grid_buttons
 
-        # Esta es una lista para respuestas.
-        list_texts_snackbar:
-            ("The task description is too short.",\
-            "The task time was not specified.",\
-            "The task with the description already exists.",\
-            f"The task has been added: {root.description}")
+                spacing: 3
+                size_hint: None, None  # Ajusta el ancho del layout y permite que la altura se ajuste automáticamente
+                height: self.minimum_height  # Ajusta la altura al contenido
+                size: self.minimum_size
+                pos_hint: {"center_x": 0.5, "center_y": .3}
 
-        on_release:
-            root.add_todo();
 
-            if root.tarea is None:\
-            SnackbarGeneric(label_text=self.list_texts_snackbar[root.id_text_snackbar],\
-            icon="close",\
-            icon_color="red").open();
 
-            else:\
-            SnackbarGeneric(label_text=self.list_texts_snackbar[root.id_text_snackbar],\
-            icon="check",\
-            icon_color="green").open();\
+            TextIconButton:
+                icon: "check"
+                text: "Accept"
+                pos_hint: {"center_x": 0.25, "center_y": .1}
+                text_color: "blue"
+                icon_color: "blue"
 
-            root.switch_navigation();
+                # Esta es una lista para respuestas.
+                list_texts_snackbar:
+                    ("The task description is too short.",\
+                    "The task time was not specified.",\
+                    "The task with the description already exists.",\
+                    f"The task has been added: {root.description}")
 
-    TextIconButton:
-        icon: "close"
-        text: "Cancelar"
-        pos_hint: {"center_x": 0.75, "center_y": .15}
-        text_color: "blue"
-        icon_color: "red"
-        on_release: root.switch_navigation()
+                on_release:
+                    root.add_todo();
+
+                    if root.tarea is None:\
+                    SnackbarGeneric(label_text=self.list_texts_snackbar[root.id_text_snackbar],\
+                    icon="close",\
+                    icon_color="red").open();
+
+                    else:\
+                    SnackbarGeneric(label_text=self.list_texts_snackbar[root.id_text_snackbar],\
+                    icon="check",\
+                    icon_color="green").open();\
+
+                    root.switch_navigation();
+
+            TextIconButton:
+                icon: "close"
+                text: "Cancel "
+                pos_hint: {"center_x": 0.75, "center_y": .1}
+                text_color: "blue"
+                icon_color: "red"
+
+                on_release:
+                    root.switch_navigation()
 
 
 # =============================================================================
