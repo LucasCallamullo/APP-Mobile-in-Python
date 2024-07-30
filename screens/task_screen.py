@@ -1,11 +1,13 @@
 
-
+from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
 
-from models.popup_time_select import *
-from models.day_button import *
-from models.tarea import *
-from models.tarea_card import *
+# Importa solo las clases necesarias
+from models.day_button import GridButtonsDay
+from models.popup_time_select import PopupSelectTime
+
+from models.tarea import Tarea
+from models.tarea_card import TareaCard
 
 from models.snackbar_generic import *
 
@@ -14,13 +16,12 @@ class AddTaskScreen(MDScreen):
 
     def __init__(self, **kwargs):
         """
-        Constructor de la clase AddTaskScreen.
+        Constructor for the AddTaskScreen class.
 
         Notes:
-            popup crea al popup select time, como un objeto dentro de la screen para llamarlo cuando querramos
-            description(str): hace referencia al valor que ingresamos como texto. inicia vacío para ser bandera
-            hours_value(int): es la hora recuperada del popup, empieza en -1 para ser bandera
-
+            - `popup` creates the PopupSelectTime as an object within the screen to call it when needed.
+            - `description` (str): Refers to the text value entered. Starts empty as a flag.
+            - `hours_value` (int): The hour retrieved from the popup, starts at -1 as a flag.
         """
         super(AddTaskScreen, self).__init__(**kwargs)
         self.popup = PopupSelectTime()
@@ -32,12 +33,8 @@ class AddTaskScreen(MDScreen):
         self.tarea = None
         self.id_text_snackbar = ""
 
-    def on_enter(self):
-        self.add_widget(GridButtonsDay())
-
-    def on_leave(self, *args):
-        self.ids.display_work.text = ""
-        self.ids.display_time.text = ""
+    # def on_enter(self):
+        # self.add_widget(GridButtonsDay())
 
     # =================================================================
     #       Updates Labels Texts.
@@ -49,7 +46,15 @@ class AddTaskScreen(MDScreen):
 
     def update_label_text(self, description):
         """
-            Actualiza el MDLabel que muestra la tarea y nos muestra el nuevo texto que ingresamos.
+        Updates the MDLabel displaying the task with the new text entered.
+
+        Args:
+            description (str): The new description to be displayed.
+
+        Notes:
+            - The `self.description` attribute is updated with the provided description,
+              which is stripped of leading and trailing whitespace and capitalized.
+            - The updated description is then appended to the text of `self.ids.display_work`.
         """
         self.description = description.strip().capitalize()
         self.ids.display_work.text += f"{self.description}"
@@ -64,32 +69,46 @@ class AddTaskScreen(MDScreen):
     # =================================================================
     def add_todo(self):
         """
-            Notes:
-                Se llama desde (work_screen: button_aceptar) lo que hace es llamar Tarea.create() y nos devuelva
-                si se pudo crear la tarea a partir de los datos completados en los distintos labels de add_work
-                si se creó devuelve una Tarea=Objeto completo, si no devuelve None
+        Notes:
+            - This method is called from (work_screen: button_aceptar) and it calls Tarea.create() to create a new task
+              based on the data filled in the various labels of add_work.
+            - If the task is created successfully, it returns a Tarea object; otherwise, it returns None.
+            - If a task is created, it adds a TodoCard() widget to the (main_screen: id:todo_list).
 
-                En caso de que se cree agrega un widget de TodoCard() al (main_screen: id:todo_list)
-
-            =======================================================================================================
-                esta forma si bien funciona podría ser un problema si yo quisiera hacer un reset de los datos al
-                salir de add_work revisar, podría crear la propia clase tarea en work_screen como atributo y mandarlo
-                como atributo
-            =======================================================================================================
+        =======================================================================================================
+            Although this method works, it might be problematic if you want to reset the data when leaving add_work.
+            Consider creating a Tarea class instance in work_screen as an attribute and passing it as an argument.
+        =======================================================================================================
         """
         list_days = self.ids.grid_buttons.list_active_day_button()
-        self.tarea, self.id_text_snackbar = Tarea.create(list_days=list_days, desc=self.description,
-                                                      hour=self.hours_value, min=self.minutes_value)
+
+        # Additionally, it returns the id_text to display in the SnackBar in case of creation failure.
+        self.tarea, self.id_text_snackbar = Tarea.create(
+                        list_days=list_days, desc=self.description,
+                        hour=self.hours_value, minute=self.minutes_value)
 
         if self.tarea:
+            # Create the TareaCard object to add to the todo_list through a method of main_screen
+            task_to_add = TareaCard(self.tarea)
+            task_to_add2 = TareaCard(self.tarea, True)
+            task_to_add3 = TareaCard(self.tarea, True)
+
             main_screen = MDApp.get_running_app().root.get_screen("main")
-            main_screen.ids.todo_list.add_widget(TareaCard(self.tarea))
+
+            main_screen.ids.todo_list.add_widget_in_todo_list(task_to_add)
+
+            history_screen = main_screen.ids.history_screen
+            history_screen.ids.selection_list.add_widget_in_todo_list(task_to_add2)
+            # history_screen.listar_callback()
+
+            all_tasks_screen = MDApp.get_running_app().root.get_screen("all_tasks_screen")
+            all_tasks_screen.ids.selection_all_list.add_widget_in_todo_list(task_to_add3)
 
     def switch_navigation(self):
         """
         Notes:
-             Simplemente es una forma de volver directo al switch_tab "main_tab" ya que no se puede volver
-             directo al screen "main" debido al bottom_navigation
+            - Simply switches to the "main_tab" directly, as you cannot navigate directly to the "main" screen
+              due to the bottom_navigation.
         """
         main_screen = MDApp.get_running_app().root.get_screen("main")
         main_screen.ids.bottom_nav.switch_tab("main_tab")

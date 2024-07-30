@@ -8,7 +8,7 @@ import datetime
 from datetime import date
 from math import ceil, floor, exp
 
-from kivymd.uix.list import MDList
+from models.listas_todo_card import BaseList
 
 from kivy.clock import Clock
 from kivy.animation import Animation
@@ -17,28 +17,33 @@ from kivy.uix.scrollview import ScrollView
 from kivy.properties import NumericProperty, AliasProperty, ObjectProperty, StringProperty
 
 
-
-
-class ListTodoCard(MDList):
-    """ realmente no se si es necesario probable de borrar. """
-
+class ListTodoCard(BaseList):
     def __init__(self, **kwargs):
+        """
+        Initializes the ListTodoCard class.
+
+        :param kwargs: Keyword arguments for initialization.
+
+        Notes:
+            - Binds the `minimum_height` of the list to adjust its height dynamically.
+            - Initializes `widgets_dict`, a dictionary used for indexing widgets.
+        """
         super(ListTodoCard, self).__init__(**kwargs)
 
         self.bind(minimum_height=self.setter('height'))
-        self.widgets_dict = {}  # Diccionario para indexar widgets
+        # Dictionary for indexing widgets
+        # self.widgets_dict = {}
 
 
 class MainScreen(MDScreen):
     """
-        Pantalla principal de la aplicación, muestra la lista de tareas y la fecha.
+    Main screen of the application, shows the task list and the date.
     """
-    # current = StringProperty(None)
 
     def __init__(self, **kwargs):
         """
         Notes:
-            Agregamos simplemente un atributo para poder usarlo en la función on_start de la app
+            We add just an attribute to use it in the app's on_start function.
         :param kwargs:
         """
         super(MainScreen, self).__init__(**kwargs)
@@ -47,10 +52,9 @@ class MainScreen(MDScreen):
     def on_enter(self):
         """
         Notes:
-            Se ejecuta cada vez que se muestra la pantalla. Actualiza la fecha actual.
+            Executes every time the screen is displayed. Updates the current date.
         """
         today = date.today()
-        # wd = date.weekday(today)
         self.today_id = date.weekday(today)
         days = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
         year = str(datetime.datetime.now().year)
@@ -58,76 +62,14 @@ class MainScreen(MDScreen):
         day = str(datetime.datetime.now().strftime("%d"))
         self.ids.date.text = f"{days[self.today_id]}, {day} {month} {year}"
 
-    def add_widget_in_todo_list(self, task_to_add):
-        """
-        :param
-        :return:
-        """
-        todo_list_widget = self.ids.todo_list
-        todo_list_widget.add_widget(task_to_add)
-        todo_list_widget.widgets_dict[task_to_add.tarea.id] = task_to_add
 
-    def update_widget_in_todo_list(self, task_update):
-
-        todo_list_widget = self.ids.todo_list
-
-        widget = todo_list_widget.widgets_dict.get(task_update.id)
-
-        if widget:
-            widget.tarea = task_update
-
-            # llamo al metodo de TareaCard para actualizar los titulos
-            widget.update_texts_on_label()
-
-            # Reasigna el widget actualizado al diccionario (opcional, no es realmente necesario)
-            # Ya que los diccionarios a hacer referencia al objeto cualquier cambio efectuado se verá reflejado
-            # directamente.
-            todo_list_widget.widgets_dict[task_update.id] = widget
-
-            # llamo al metodo de TareaCard para sobreescribir el archivo de memoria binario
-            widget.save_write_data()
-
-            print("mi widget_tarea:")
-            print(widget.tarea)
-
-        """ 
-        este era la anterior logica pero fue cambiado ya que al ser una busqeuda secuencial con complejidad
-        O(n) era mucho mas lenta que la complejidad de los diccionarios de aproximadamente O(1)
-        for child in self.ids.todo_list.children:
-            if hasattr(child, 'tarea') and child.tarea.id == task_update.id:
-                # Actualiza los atributos del widget directamente
-                child.tarea = task_update
-                # Llama al método para actualizar sus datos de visualización
-                child.update_texts_on_label()
-                break
-        """
-
-    def remove_widget_from_todo_list(self, task_delete):
-        """
-        Elimina el widget de la lista de tareas correspondiente al ID de la tarea.
-
-        Parameters:
-        ----------
-        task_id : int
-            El ID de la tarea que se desea eliminar.
-        """
-
-
-        todo_list_widget = self.ids.todo_list
-
-
-        widget = todo_list_widget.widgets_dict.get(task_delete.id)
-
-        if widget:
-            # llamo al metodo de TareaCard para sobreescribir el archivo de memoria binario para que quede
-            # guardado el nuevo estado de soft delete
-            widget.tarea = task_delete
-            widget.save_write_data()
-
-            todo_list_widget.remove_widget(widget)
-
-            # esto lo elimina del diccionario por ahora no es lo que quiero
-            del todo_list_widget.widgets_dict[task_delete.id]
+# ================================================================================
+#       All of this is for a effect, maybe review in the future
+# ================================================================================
+class ScrollViewTodoCard(ScrollView):
+    def __init__(self, **kwargs):
+        super(ScrollViewTodoCard, self).__init__(**kwargs)
+        self.effect_y = RouletteScrollEffect(anchor=20, interval=80)
 
 
 class RouletteScrollEffect(ScrollEffect):
@@ -265,9 +207,3 @@ class RouletteScrollEffect(ScrollEffect):
     def _coasted_to_stop(self, *args):
         self.velocity = 0
         self.dispatch('on_coasted_to_stop')
-
-
-class ScrollViewTodoCard(ScrollView):
-    def __init__(self, **kwargs):
-        super(ScrollViewTodoCard, self).__init__(**kwargs)
-        self.effect_y = RouletteScrollEffect(anchor=20, interval=80)
