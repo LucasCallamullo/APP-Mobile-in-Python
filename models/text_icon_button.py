@@ -1,11 +1,19 @@
 
 
-from kivymd.app import MDApp
 from kivymd.uix.button import MDFillRoundFlatIconButton
 
 
 class TextIconButton(MDFillRoundFlatIconButton):
     def __init__(self, **kwargs):
+        """
+        Initializes a custom button with a round flat design and an icon.
+
+        This button is based on MDFillRoundFlatIconButton and can be customized with various properties such as
+        text, icon, and color.
+
+        :param kwargs: Additional keyword arguments to customize the button's appearance and behavior.
+        """
+
         super(TextIconButton, self).__init__(**kwargs)
 
     """ 

@@ -5,30 +5,30 @@ from kivymd.uix.button import MDIconButton
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.color_definitions import colors
 
-from kivy.properties import ListProperty, BooleanProperty
+from kivy.properties import BooleanProperty     # , ListProperty
 
-from models.snackbar_generic import *
+from models.snackbar_generic import SnackbarGeneric
 
 
 class GridButtonsDay(MDGridLayout):
     """
-        * creo que todavía se podría mejorar la creacion del diccionario para que sean 7 vueltas en vez de 14
-        pero de momento lo voy a dejar asi
-        * tambien debería ver como pasar como parametro desde el .kv una lista con los nombres de los iconos
-        para poder utilizar en este constructor, aunque creo que debería pasarlo por el workscreen primero revisar
+        * It might still be possible to improve the creation of the dictionary to use 7 iterations instead of 14,
+          but for now, I'll leave it as is.
+        * I should also consider how to pass a list of icon names as a parameter from the .kv file
+          to use in this constructor. Although I think it should be passed through the work screen first—I'll check.
     """
     def __init__(self, lista_active=None, **kwargs):
         """
-        Constructor de GridButtonsDay.
+        Constructor for GridButtonsDay.
 
-        Este constructor inicializa un diccionario para facilitar la creación genérica de botones
-        para cada día de la semana. Los botones son añadidos al layout al momento de la creación del objeto.
+        This constructor initializes a dictionary to facilitate the generic creation of buttons
+        for each day of the week. The buttons are added to the layout at the time of object creation.
 
-        Notas:
-            - Se usa un diccionario para almacenar el estado, ícono e ID de cada día.
+        Notes:
+            - A dictionary is used to store the state, icon, and ID of each day.
 
-        Parámetros:
-            **kwargs: Argumentos clave para inicialización.
+        Parameters:
+            **kwargs: Keyword arguments for initialization.
         """
         super(GridButtonsDay, self).__init__(**kwargs)
         self.cols = 7
@@ -60,31 +60,32 @@ class GridButtonsDay(MDGridLayout):
 
     def change_list_dicts(self, day_button):
         """
-        Actualiza el diccionario de días con el estado actual del botón de día.
+        Updates the day dictionary with the current state of the day button.
 
-        :param day_button: El botón de día cuya información se va a actualizar.
-        :type day_button: DayButton
+        :param day_button: The day button whose information is being updated.
+        :type day_button: DayButton()
         :return: None
         Notes:
-            Se utiliza un diccionario para acceder directamente al estado del día con una velocidad de O(1),
-            en lugar de iterar a través de una lista, lo que tendría una velocidad de O(n) (n=7 días).
+            A dictionary is used to access the day state directly with O(1) speed,
+            instead of iterating through a list, which would have O(n) speed (n=7 days).
         """
+        # Check if the ID of the day button is in the dictionary
         self.days_dict[day_button.id]["active"] = day_button.active
 
     def list_active_day_button(self) -> list:
         """
-        Obtiene una lista de estados activos de los días a partir del diccionario days_dict.
+        Retrieves a list of active states of the days from the days_dict dictionary.
 
-        :return: Una lista de booleanos que indican si cada día está activo o no.
+        :return: A list of booleans indicating whether each day is active or not.
         :rtype: list
 
-        Notas:
-            - El diccionario self.days_dict se actualiza cada vez que se toca un botón de día.
-            - El diccionario contiene claves como 'sunday', 'monday', etc., con valores que son diccionarios.
-            - Cada valor del diccionario tiene una clave 'active' que indica si el día está activo.
+        Notes:
+            - The self.days_dict dictionary is updated every time a day button is pressed.
+            - The dictionary contains keys such as 'sunday', 'monday', etc., with values that are dictionaries.
+            - Each dictionary value has a key 'active' indicating if the day is active.
 
-        Ejemplo:
-            Si self.days_dict es:
+        Example:
+            If self.days_dict is:
             {
                 'sunday': {'active': True},
                 'monday': {'active': False},
@@ -95,7 +96,7 @@ class GridButtonsDay(MDGridLayout):
                 'saturday': {'active': True}
             }
 
-            La función devolverá: [True, False, True, False, True, False, True]
+            The function will return: [True, False, True, False, True, False, True]
         """
         lista_days = list()
 
@@ -110,27 +111,35 @@ class DayButton(MDIconButton):
 
     def __init__(self, id_num=0, **kwargs):
         """
-        Inicializa el DayButton.
+        Initializes the DayButton.
 
-        Notas:
-            - Los botones siempre inician en estado inactivo (False), por lo que se deja el color inactivo por defecto.
+        Notes:
+            - The buttons always start in inactive (False) state, so the inactive color is set by default.
+            - The `id_num` parameter represents the numeric identifier for the button. It is used for
+            indexing or identification purposes.
+
+        Parameters:
+            id_num (int): Numeric identifier for the button. Default is 0.
+            **kwargs: Additional keyword arguments for initialization.
         """
         super(DayButton, self).__init__(**kwargs)
         self.id_num = id_num
 
     def check_button(self, i, active):
         """
-        Cambia el estado activo del botón y actualiza el diccionario de días en el contenedor padre.
+        Changes the active state of the button and updates the parent container's days dictionary.
 
-        :param i: instancia del botón, no se usa dentro de la función pero se mantiene para compatibilidad.
-        :param active: bool, el self.active para saber su estado.
+        :param i: Instance of the button. Although it is not used within the function, it is kept
+        for compatibility.
+        :param active: bool, the `self.active` state of the button to know its state.
         :return: None
 
-        Notas:
-            - la condicion del screen_work es para que solo se pueda modificar si el edit_mode esta en True
-            - Cambia el color del botón basado en su nuevo estado activo.
-            - Cambia el valor del atributo .active de True a False o viceversa
-            - Actualiza el diccionario de días del contenedor padre llamando a `change_list_dicts`.
+        Notes:
+            - The condition checking `screen_work` is to ensure modifications can only be made
+            if `edit_mode` is True.
+            - Changes the button color based on its new active state.
+            - Toggles the value of the `self.active` attribute between True and False.
+            - Updates the parent container's days dictionary by calling `change_list_dicts`.
         """
 
         screen = MDApp.get_running_app().root.current
@@ -143,15 +152,18 @@ class DayButton(MDIconButton):
 
                 self.active = not self.active
                 screen_info.tarea.list_days[self.id_num] = self.active
+
+                # First, toggle the .active state, then update the dictionary
+                self.parent.change_list_dicts(self)
+
             else:
                 SnackbarGeneric(label_text="You must activate edit mode to make changes.",
                                 icon="close").open()
-            # retorno para evitar que se aplique dos veces el cambio de self.active
+            # Return to prevent the change to `self.active` from being applied twice
             return
 
-        # primero hay que efectuar el cambio del .active y despues editamos el diccionario
+        # First, toggle the .active state, then update the dictionary
         self.active = not self.active
         self.parent.change_list_dicts(self)
 
-
-        print(self.active)
+        print(f"estado del botm: {self.active}")

@@ -1,7 +1,5 @@
 
 
-import pickle
-
 from kivymd.app import MDApp
 from kivy.properties import BooleanProperty
 from kivymd.uix.selectioncontrol import MDCheckbox
@@ -11,63 +9,45 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 
 
+from models.tarea import save_wb_task_data
+from models.tarea import save_ab_task_data
+
+
 class TareaCard(TwoLineAvatarIconListItem):
     def __init__(self, tarea, is_open=False, **kwargs):
+
         """
         Parameters:
-            ** kwargs: Argumentos clave para inicialización.
-            tarea: es un objeto Tarea creado completo. (es decir ya paso por el create_task(cls)
-            is_open: es para saber si estoy durante el programa(False) o iniciando(True)
-            tarea_state: realmente tuve que crearlo para tener una instancia que pueda usar de variable para
-                algunas condiciones en el diseño dentro del .kv
+            **kwargs: Keyword arguments for initialization.
+            tarea: A fully created Tarea object (i.e., it has already gone through create(cls) from tarea.py).
+            is_open: Indicates whether the application is currently running (False) or starting (True).
+            tarea_state: This was created to have an instance variable for use in design conditions within
+            the .kv file.
 
         Notes:
+            - The tarea_state is used to manage the state of the task for UI purposes.
+            - soft_delete is used to track if the task has been marked for soft deletion.
         """
+
         super(TareaCard, self).__init__(**kwargs)
         self.tarea = tarea
+
         self.tarea_state = self.tarea.state
+        self.soft_delete = self.tarea.soft_delete
+
         self.update_texts_on_label()
 
         self.dialog = None
 
         if not is_open:
-            self.save_append_data()
+            # Add the task to the list of all tasks from app_main.
+            MDApp.get_running_app().list_tasks.append(self.tarea)
+
+            # Save the new task to the binary file at the end.
+            save_ab_task_data(task=self.tarea)
 
     def __str__(self):
-        return "hola tarea card"
-
-    # =================================================================
-    #               SAVE AND LOAD DATA FROM LISTS
-    # =================================================================
-    def save_append_data(self, fd='tareas.dat'):
-        """
-        Notes:
-            Se llama cada vez que agreguemos una nueva tarea completa en este caso usamos el "ab"
-            por una cuestión de que no hacer falta reescribir tod0 el archivo completo solamente agregar
-            el nuevo elemento al final del archivo, tambien es para respetar el orden de los ID.
-        :return:
-        """
-        # se hace este append, para que también se agregue a lista que corresponde al total de tareas.
-        MDApp.get_running_app().list_tasks.append(self.tarea)
-
-        with open(fd, 'ab') as file:
-            pickle.dump(self.tarea, file)
-            file.flush()
-            print(self.tarea)
-
-    def save_write_data(self, fd='tareas.dat'):
-        """
-        Notes:
-            - Por ahora se llama cuando confirmamos con el CheckBox que realizamos la Task
-            - Todavía puedo realizar alguna forma de verificar el estado solo una vez y que no se pueda modificar.
-
-        """
-        list_tasks = MDApp.get_running_app().list_tasks
-        # en este caso reescribimos el archivo binario por completo con los datos actualizados.
-        with open(fd, 'wb') as file:
-            for task in list_tasks:
-                pickle.dump(task, file)
-                file.flush()
+        return "hi tarea card"
 
     # =================================================================
     #       Buttons Actions of Tarea Card
@@ -75,36 +55,48 @@ class TareaCard(TwoLineAvatarIconListItem):
     def on_press(self, *args):
         """
         Notes:
-            - Se llama asi misma cuando se toca el Label que contiene la Tarea en sí
-            - Luego te redirige a la pantalla "info_task" para más info de la tarea, a su vez
-            lleva una función propia update_info_task_screen de "info_task" para poder crear la
-            pantalla con los datos necesarios.
+            - This method is triggered when the Label containing the Task is pressed.
+            - It navigates to the "info_task" screen to show detailed information about the task.
+            - It also calls the `update_info_task_screen` method of the "info_task" screen to prepare
+              the screen with the necessary data.
+
         """
+        # Get the main screen from the running app
         main_screen = MDApp.get_running_app().root.get_screen("main")
+        # Access the history screen from the main screen
         history_screen = main_screen.ids.history_screen
 
+        # If the history screen is in edit mode, do nothing
         if history_screen.edit_mode:
             return
 
+        # Get the info task screen from the app
         info_screen = MDApp.get_running_app().root.get_screen("info_task")
+        # Update the info task screen with the task data
         info_screen.update_info_task_screen(self.tarea)
+        # Switch to the info task screen
         MDApp.get_running_app().root.current = "info_task"
 
     def check_complete(self, i, value):
         """
         Args:
-            i (int): El índice del checkbox. (poner si o si)
-            value (bool): El estado del checkbox (True si está marcado, False si no).
+            i (int): The index of the checkbox. (This argument is required) ?¿
+            value (bool): The state of the checkbox (True if checked, False if not).
 
         Notes:
-            Actualiza el valor del tarea_state y del self.tarea.state que no son lo mismo recordemos.
-            Uno es el estado del objeto tarea, y otro es del TareaCard
-            - Pensar si guardar con save_data.
+            - Updates both `tarea_state` and `self.tarea.state`. These are not the same;
+              `tarea_state` is the state specific to the `TareaCard`, whereas `self.tarea.state`
+              refers to the state of the `Tarea` object itself.
         """
-        self.tarea.state = True if value else False
+        # Update the state of the `Tarea` object based on the checkbox value
+        # self.tarea.state = True if value else False
+        self.tarea.state = value
+
+        # Also update the `tarea_state` for the `TareaCard`
         self.tarea_state = self.tarea.state
 
-        print("el self tarea.state es:", self.tarea.state)
+        # Print the updated state for debugging purposes
+        print("The self.tarea.state is:", self.tarea.state)
 
     # =================================================================
     #       Updates Labels Texts.
@@ -112,10 +104,14 @@ class TareaCard(TwoLineAvatarIconListItem):
     def update_texts_on_label(self):
         """
         Notes:
-            Lo único que hace es actualizar los valores de texto y hora que se muestran.
+            - Updates the text and time values displayed on the label.
+            - This method is responsible for setting the primary and secondary text
+              of the widget based on the `Tarea` object attributes.
         """
+        # Set the primary text to the task description
         self.text = self.tarea.description
 
+        # Combine hour and minute into a formatted string and set it as the secondary text
         combined_value = f"{self.tarea.hour:02d}:{self.tarea.minute:02d}"
         self.secondary_text = combined_value
 
@@ -124,14 +120,18 @@ class TareaCard(TwoLineAvatarIconListItem):
     # =================================================================
     def create_dialog(self, text_title="", text_label="", list_buttons=None):
         """
-        Crea y muestra un diálogo genérico con botones personalizados.
+        Creates and displays a generic dialog with customizable buttons.
 
         Args:
-            text_title (str): Título del diálogo.
-            text_label (str): Texto principal del diálogo.
-            list_buttons (tuple): Lista de etiquetas para los botones.
-                                  Si no se proporciona, se usan valores por defecto ("Completed", "Incomplete", "Cancel").
+            text_title (str): The title of the dialog.
+            text_label (str): The main text of the dialog.
+            list_buttons (tuple): List of labels for the buttons.
+                                  If not provided, default values ("Completed", "Incomplete", "Cancel") are used.
 
+        Notes:
+            - If `list_buttons` is not provided, default button labels are used.
+            - The dialog is created and opened only if it does not already exist.
+            - Button actions are bound to methods for handling task state updates and dialog closure.
         """
         if list_buttons is None:
             list_buttons = ("Completed", "Incomplete", "Cancel")
@@ -140,6 +140,7 @@ class TareaCard(TwoLineAvatarIconListItem):
             self.dialog = MDDialog(
                 text=text_label,
                 title=text_title,
+                on_pre_dismiss=self.dialog_reset,
                 buttons=[
                     MDFlatButton(
                         text=list_buttons[0],
@@ -163,46 +164,67 @@ class TareaCard(TwoLineAvatarIconListItem):
             )
             self.dialog.open()
 
-        else:
-            self.dialog = None
+    def dialog_reset(self, *args, **kwargs):
+        """
+        Notes:
+            This call on pre_dismiss event is for reset correctly the dialog
+        """
+        self.dialog = None
 
     def dialog_close(self, *args, **kwargs):
         """
-        Cierra el diálogo actual y lo elimina.
+        Closes the current dialog and removes it.
+
+        Notes:
+            - The dialog is dismissed and the reference to it is set to None.
         """
-        self.dialog.dismiss()
+        if self.dialog:
+            self.dialog.dismiss()
+
         self.dialog = None
 
     def count_tasks_one(self, *args, **kwargs):
         """
-        Marca la tarea como completada, la guarda en la lista de tareas y cierra el diálogo.
+        Marks the task as completed, saves it in the task list, and closes the dialog.
+
+        Notes:
+            - Appends a value of 1 to the `list_repeat` attribute of the task.
+            - Updates the task in the main application’s task list.
+            - Calls `dialog_close` to close the dialog.
+            - Saves the updated task data.
         """
         self.tarea.list_repeat.append(1)
 
-        # Actualiza la lista de tareas en la aplicación principal.
+        # Updates the task list in the main application.
         MDApp.get_running_app().list_tasks[self.tarea.id] = self.tarea
+
+        # Print to check if the task is saved correctly
+        print(self.tarea)
 
         self.dialog_close()
 
-        # print("Probamos si guarda")
-        print(self.tarea)
-
-        # Guarda los cambios en los datos.
-        self.save_write_data()
+        # Save the updated task data. Tarea Module
+        save_wb_task_data()
 
     def count_tasks_zero(self, *args, **kwargs):
         """
-        Marca la tarea como incompleta, la guarda en la lista de tareas y cierra el diálogo.
+        Marks the task as incomplete, saves it in the task list, and closes the dialog.
+
+        Notes:
+            - Appends a value of 0 to the `list_repeat` attribute of the task to indicate incompleteness.
+            - Updates the task in the main application’s task list.
+            - Calls `dialog_close` to close the dialog.
+            - Saves the updated task data.
         """
         self.tarea.list_repeat.append(0)
 
-        # Actualiza la lista de tareas en la aplicación principal.
+        # Updates the task list in the main application.
         MDApp.get_running_app().list_tasks[self.tarea.id] = self.tarea
 
         self.dialog_close()
 
-        # Guarda los cambios en los datos.
-        self.save_write_data()
+        # Save the updated task data.
+        save_wb_task_data()
 
 
 class RightCheckbox(IRightBodyTouch, MDCheckbox):
@@ -210,9 +232,10 @@ class RightCheckbox(IRightBodyTouch, MDCheckbox):
 
     def __init__(self, **kwargs):
         """
-        Inicializa el RightCheckbox.
+        Initializes the RightCheckbox.
+
         Notes:
-            Se utiliza en la creación del Tarea Card es la forma de saber si realizamos una tarea o no
-            - Obtiene su propio atributo active que es simplemente un bool
+            - Used in the creation of the Task Card to determine whether a task has been completed or not.
+            - It has its own `active` attribute, which is simply a boolean.
         """
         super(RightCheckbox, self).__init__(**kwargs)
