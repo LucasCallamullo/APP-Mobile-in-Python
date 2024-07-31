@@ -1,7 +1,7 @@
 ## Task Mobile App
 A mobile app that allows you to save, create, edit, delete, and recover tasks if needed. Tasks can be registered with a description, an alarm time, days when they need to be completed, and you can also track your progress by saving it. Additionally, the app rewards you with motivational images depending on the situation.
 
-![Static Badge](https://img.shields.io/badge/Documentation-EN-blue) [![Documentation ES](https://img.shields.io/badge/Documentation-ES-green)](https://your-username.github.io/your-repo/es/)
+![Static Badge](https://img.shields.io/badge/Documentation-EN-blue) [![Documentation ES](https://img.shields.io/badge/Documentation-ES-green)]([https://your-username.github.io/your-repo/es/](https://github.com/LucasCallamullo/APP-Mobile-in-Python/blob/main/Read_es.md))
 
 ### [EN]
 #### Technologies
@@ -47,8 +47,9 @@ A mobile app that allows you to save, create, edit, delete, and recover tasks if
 * apk/: Buildozer and steps to follow in Google Colab.
 * main.py: The main file to run the application.
 
-[![Documentation ES](https://img.shields.io/badge/Documentation-ES-green)](https://your-username.github.io/your-repo/es/)
 ### [ES]
+[![Documentation ES](https://img.shields.io/badge/Documentation-ES-green)]([https://your-username.github.io/your-repo/es/](https://github.com/LucasCallamullo/APP-Mobile-in-Python/blob/main/Read_es.md))
+
 
 ## Images:
 ![](https://i.pinimg.com/736x/79/86/9d/79869d5f18a93398ca1dcfe3d1328db9.jpg)
