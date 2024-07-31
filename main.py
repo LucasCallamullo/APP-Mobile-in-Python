@@ -6,20 +6,17 @@ from kivymd.uix.screenmanager import MDScreenManager
 
 # Aca van mis modulos importados
 from screens.main_screen import MainScreen
-from screens.task_screen import *
-from screens.task_info_screen import *
-from screens.task_history_screen import *
-from screens.task_alls_screen import *
+from screens.task_screen import AddTaskScreen
+from screens.task_info_screen import InfoWorkScreen
+from screens.task_history_screen import TaskHistoryScreen
+from screens.task_alls_screen import AllTasks
 
-from models.tarea_card import *
-
-
+from models.tarea_card import TareaCard
 from models.tarea import load_rb_task_data
 
-
 # This is for setting the window size similar to a cellphone
-from kivy.core.window import Window
-Window.size = (350, 600)
+# from kivy.core.window import Window
+# Window.size = (350, 600)
 
 
 def load_kv_files():
