@@ -4,7 +4,7 @@ A mobile app that allows you to save, create, edit, delete, and recover tasks if
 ![Static Badge](https://img.shields.io/badge/Documentation-EN-blue) [![Documentation ES](https://img.shields.io/badge/Documentation-ES-green)](https://your-username.github.io/your-repo/es/)
 
 ### [EN]
-####Technologies
+#### Technologies
 * Python 3.12: Ensures compatibility with the latest features and improvements of the language.
 * Kivy: Used to build the graphical user interface (GUI) of the application.
 * KivyMD 1.2.0: Provides Material Design components for enhanced visual and functional design.
