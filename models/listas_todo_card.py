@@ -45,8 +45,8 @@ class BaseList(MDList):
             # Save the updated state to the binary file
             save_wb_task_data()
 
-            print("Updated widget task:")
-            print(widget.tarea)
+            # print("Updated widget task:")
+            # print(widget.tarea)
 
     def remove_widget_from_todo_list(self, task_delete):
         """

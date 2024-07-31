@@ -154,7 +154,7 @@ def save_ab_task_data(task=None, fd='tareas.dat'):
     with open(fd, 'ab') as file:
         pickle.dump(task, file)
         file.flush()
-        print(task)
+        # print(task)
 
 
 def save_wb_task_data(fd='tareas.dat'):
@@ -203,7 +203,7 @@ def load_rb_task_data(fd='tareas.dat'):
                 try:
                     task_recovery = pickle.load(file)
                     list_tasks.append(task_recovery)
-                    print(task_recovery)
+                    # print(task_recovery)
                 except EOFError:
                     break
 

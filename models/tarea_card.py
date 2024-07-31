@@ -96,7 +96,7 @@ class TareaCard(TwoLineAvatarIconListItem):
         self.tarea_state = self.tarea.state
 
         # Print the updated state for debugging purposes
-        print("The self.tarea.state is:", self.tarea.state)
+        # print("The self.tarea.state is:", self.tarea.state)
 
     # =================================================================
     #       Updates Labels Texts.
@@ -199,7 +199,7 @@ class TareaCard(TwoLineAvatarIconListItem):
         MDApp.get_running_app().list_tasks[self.tarea.id] = self.tarea
 
         # Print to check if the task is saved correctly
-        print(self.tarea)
+        # print(self.tarea)
 
         self.dialog_close()
 

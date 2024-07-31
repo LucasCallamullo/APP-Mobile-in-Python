@@ -105,6 +105,29 @@ class GridButtonsDay(MDGridLayout):
 
         return lista_days
 
+    def reset_days_buttons(self):
+        """
+        Resets the state of all DayButton widgets within the GridButtonsDay layout.
+
+        This method iterates through all child widgets of the GridButtonsDay layout,
+        identifies those that are instances of DayButton, and resets their state.
+
+        The following updates are made to each DayButton:
+            - `active` attribute is set to False, indicating that the button is not active.
+            - `md_bg_color` attribute is updated to a gray color, representing the inactive state.
+
+        This method is typically used to reset the appearance and state of day buttons
+        when transitioning away from a tab screen or performing a similar reset action.
+
+        Notes:
+            - The color for inactive buttons is set using the `colors` dictionary with the key "BlueGray" and the value "600".
+        """
+        for child in self.children:
+            if isinstance(child, DayButton):
+                child.active = False
+                child.md_bg_color = colors["BlueGray"]["600"]  # Actualiza el color según el estado
+                self.change_list_dicts(child)
+
 
 class DayButton(MDIconButton):
     active = BooleanProperty(False)
@@ -166,4 +189,4 @@ class DayButton(MDIconButton):
         self.active = not self.active
         self.parent.change_list_dicts(self)
 
-        print(f"estado del botm: {self.active}")
+        # print(f"estado del botm: {self.active}")
