@@ -129,7 +129,8 @@
             add_work: add_work
 
             on_leave:
-                add_work.reset_text_labels("Task: ", "Hour: ")
+                add_work.reset_text_labels_n_icon("Task: ", "Hour: ", "note-alert-outline")
+                add_work.reset_grid_buttons()
 
             AddTaskScreen:
                 id: add_work
@@ -148,12 +149,12 @@
 
             on_tab_press:
                 history_screen.change_edit_mode()
-                print(history_screen.edit_mode)
+                # print(history_screen.edit_mode)
                 # history_screen.listar_callback()
 
             on_leave:
                 history_screen.change_edit_mode()
-                print(history_screen.edit_mode)
+                # print(history_screen.edit_mode)
 
             TaskHistoryScreen:
                 id: history_screen
