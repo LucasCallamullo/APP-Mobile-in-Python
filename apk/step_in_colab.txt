@@ -1,0 +1,27 @@
+First, go to Google Colab.
+
+Next, navigate to the files folder, upload our application files.
+
+Then, execute the following steps in Google Colab with our files:
+
+Note: It's crucial to remove any modifications to the screen size in the main.py file. In theory, Kivy should automatically adjust the size on the mobile device.
+
+In step 6, I recommend using the buildozer that I have been building so far.
+
+1. !pip3 install --upgrade buildozer
+2. !sudo apt update
+3. !sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+4. !pip3 install --user --upgrade Cython==0.29.33 virtualenv # the --user should be removed if you do this in a venv
+5. !export PATH=$PATH:~/.local/bin/
+6. !buildozer init			(aceptar una vez)
+7. !buildozer -v android debug		(aceptar dos veces)
+
+
+You can perform the first 6 steps directly and modify the buildozer configuration afterward, then proceed with step 7.
+
+!pip3 install --upgrade buildozer
+!sudo apt update
+!sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+!pip3 install --user --upgrade Cython==0.29.33 virtualenv # the --user should be removed if you do this in a venv
+!export PATH=$PATH:~/.local/bin/
+!buildozer init
