@@ -136,7 +136,7 @@ class TaskHistoryScreen(MDScreen):
     def change_edit_mode(self):
         """ Disables edit mode for the screen. """
         self.edit_mode = not self.edit_mode
-        print(self.edit_mode)
+        # print(self.edit_mode)
 
     # ===========================================================================
     #           ALL funcionts relative to Selected Mod

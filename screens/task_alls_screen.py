@@ -36,6 +36,10 @@ class AllTasks(MDScreen):
 
         self.listar_all_callback()
 
+    def on_leave(self, *args):
+        main_screen = MDApp.get_running_app().root.get_screen("main")
+        main_screen.ids.history_screen.edit_mode = True
+
     def listar_all_callback(self):
         """
         Populates the list with all tasks.
@@ -46,9 +50,9 @@ class AllTasks(MDScreen):
         3. Adds each task as a `TareaCard` to the `selection_all_list`.
         """
 
-        dictionary = self.ids.selection_all_list.widgets_dict
-        if dictionary:
-            return
+        # dictionary = self.ids.selection_all_list.widgets_dict
+        # if dictionary:
+        #    return
 
         list_works = MDApp.get_running_app().list_tasks
 

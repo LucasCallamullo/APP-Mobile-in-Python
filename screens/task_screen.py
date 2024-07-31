@@ -33,16 +33,20 @@ class AddTaskScreen(MDScreen):
         self.tarea = None
         self.id_text_snackbar = ""
 
-    # def on_enter(self):
-        # self.add_widget(GridButtonsDay())
-
     # =================================================================
     #       Updates Labels Texts.
     # =================================================================
-    def reset_text_labels(self, text_task="", text_time=""):
+    def reset_grid_buttons(self):
+        """
+        Notes: This is called every time the tab screen is exited to reset the button values
+        """
+        self.ids.grid_buttons.reset_days_buttons()
+
+    def reset_text_labels_n_icon(self, text_task="", text_time="", icon="note-alert-outline"):
         self.ids.display_work.text = text_task
         self.ids.display_time.text = text_time
         self.ids.input_field.text = ""
+        self.ids.input_field.icon_right = icon
 
     def update_label_text(self, description):
         """
